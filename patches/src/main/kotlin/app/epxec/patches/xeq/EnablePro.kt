@@ -2,7 +2,6 @@ package app.epxec.patches.xeq
 
 import app.morphe.patcher.patch.bytecodePatch
 import app.epxec.patches.shared.Constants.COMPATIBILITY_XEQ
-import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.epxec.patches.xeq.Fingerprints.XEQProFingerprint
 import app.morphe.patches.all.misc.fix.changepackageinstaller.changePackageInstallerPatch
 import app.morphe.util.addInstructionsAtControlFlowLabel
@@ -18,16 +17,13 @@ val enableVipPatch = bytecodePatch(
     dependsOn(changePackageInstallerPatch())
 
     execute {
+        val instructionMatch = XEQProFingerprint.instructionMatches[0]
 
-        val invokeIndex = XEQProFingerprint.instructionMatches[0].index
-
-        XEQProFingerprint.method.addInstructions(
-            invokeIndex + 11,
+        XEQProFingerprint.method.addInstructionsAtControlFlowLabel(
+            instructionMatch.index,
             """
-                    invoke-virtual {v0}, Let1;->i()V
+                invoke-virtual {v0}, Let1;->i()V
             """
         )
-
     }
-
 }
